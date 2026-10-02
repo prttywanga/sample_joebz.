@@ -634,7 +634,8 @@ const desktopBaseSerialInput = document.getElementById('desktopBaseSerial');
 const desktopDropdownList = document.getElementById('desktopDropdownList');
 
 function renderDesktopDropdown(filterText = '') {
- const activeUnits = unitDatabase.filter(u => u.serialNumber && u.serialNumber !== '---');
+ // Only include units that are currently In Stock (exclude Dispatched items)[cite: 3]
+ const activeUnits = unitDatabase.filter(u => u.serialNumber && u.serialNumber !== '---' && u.status === 'In Stock');
  const query = filterText.trim().toLowerCase();
  const filtered = activeUnits.filter(u => {
   const desc = (u.name || '').toLowerCase();
@@ -646,7 +647,7 @@ function renderDesktopDropdown(filterText = '') {
 
  desktopDropdownList.innerHTML = '';
  if (!filtered.length) {
-  desktopDropdownList.innerHTML = '<div style="padding:10px;color:var(--text-muted);font-size:.85rem;">No active units found.</div>';
+  desktopDropdownList.innerHTML = '<div style="padding:10px;color:var(--text-muted);font-size:.85rem;">No available in-stock units found (Already Dispatched items are excluded).</div>';
   desktopDropdownList.style.display = 'block';
   return;
  }
@@ -689,9 +690,11 @@ function renderDesktopPartsLog(){
   const tr=document.createElement('tr');
   const matchingUnit = unitDatabase.find(u => u.serialNumber === item.baseSerial);
   const descText = matchingUnit && matchingUnit.name ? ` - ${matchingUnit.name}` : '';
+  const isDispatched = matchingUnit && matchingUnit.status === 'Dispatched';
+  const dispatchBadge = isDispatched ? ` <span class="badge badge-danger">Already Dispatch Item</span>` : '';
   tr.innerHTML=`
    <td>${escapeHTML(item.timestamp)}</td>
-   <td><strong>${escapeHTML(item.baseSerial)}</strong>${escapeHTML(descText)}</td>
+   <td><strong>${escapeHTML(item.baseSerial)}</strong>${escapeHTML(descText)}${dispatchBadge}</td>
    <td><span class="badge ${item.actionType==='Add Part'?'badge-success':item.actionType==='Change / Replace Part'?'badge-warning':'badge-danger'}">${escapeHTML(item.actionType)}</span></td>
    <td>${escapeHTML(item.partName)}</td>
    <td><strong style="color:#15803d">${escapeHTML(item.partSerialAdded||'—')}</strong></td>
@@ -717,6 +720,13 @@ desktopPartsForm.addEventListener('submit',e=>{
  const editId=document.getElementById('editDesktopLogId').value;
 
  if(!baseSerial){alert('Please select or enter a valid base desktop serial number.');return}
+
+ // Check if the target unit is already dispatched[cite: 3]
+ const targetUnit = unitDatabase.find(u => u.serialNumber.toLowerCase() === baseSerial.toLowerCase());
+ if (targetUnit && targetUnit.status === 'Dispatched') {
+  alert('The Item is Already Dispatch. You cannot modify or upgrade parts for a dispatched unit.');
+  return;
+ }
 
  if((actionType==='Change / Replace Part' || actionType==='Add Part' || actionType==='Remove Part') && partSerialAdded && partSerialRemoved && partSerialAdded!=='---' && partSerialRemoved!=='---' && partSerialAdded.toLowerCase()===partSerialRemoved.toLowerCase()){
   alert('The Serial Number of part Added and Part Removed cannot be the same!');
