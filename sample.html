@@ -1,0 +1,1157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#111827">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="JOEBZ">
+<title>JOEBZ - Inventory & Desktop Parts</title>
+<script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
+<style>
+:root{--primary:#6366f1;--primary-hover:#4f46e5;--bg-main:#f8fafc;--bg-secondary:#3c76af;--card-bg:#fff;--text-main:#0f172a;--text-muted:#64748b;--border:#e2e8f0;--success:#10b981;--danger:#ef4444;--warning:#f59e0b}
+*{box-sizing:border-box;margin:0;padding:0;font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+body{background:var(--bg-main);color:var(--text-main);display:flex;min-height:100vh}
+aside{width:260px;background:#0f172a;color:#fff;padding:24px;display:flex;flex-direction:column;justify-content:space-between;min-height:100vh}
+aside h2{font-size:1.15rem;color:#818cf8;margin-bottom:30px;display:flex;align-items:center;gap:10px;line-height:1.4}
+.nav-links{list-style:none;display:flex;flex-direction:column;gap:6px}.nav-links button{background:transparent;border:none;color:#94a3b8;text-align:left;padding:11px 14px;border-radius:8px;font-weight:500;cursor:pointer;width:100%;transition:.2s;font-size:.9rem}.nav-links button:hover,.nav-links button.active{background:#1e293b;color:#fff}
+main{flex:1;padding:30px;max-width:1500px;margin:0 auto;overflow-y:auto;width:100%}
+header{margin-bottom:30px;display:flex;justify-content:space-between;align-items:center}header h1{font-size:1.75rem}header p{color:var(--text-muted);font-size:.9rem;margin-top:5px}
+.tab-content{display:none}.tab-content.active{display:block}.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:20px}.grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:15px}
+.card{background:var(--card-bg);border:1px solid var(--border);border-radius:12px;padding:24px;box-shadow:0 1px 3px rgba(0,0,0,.05);margin-bottom:20px}.card h3{font-size:1.1rem;margin-bottom:16px;border-bottom:1px solid var(--border);padding-bottom:10px}
+.form-group{margin-bottom:16px}label{display:block;font-size:.85rem;font-weight:600;margin-bottom:6px;color:#334155}
+input,select,textarea{width:100%;padding:10px 14px;border:1px solid var(--border);border-radius:8px;font-size:.95rem;background:#fff;transition:border-color .2s}textarea{resize:vertical}input:focus,select:focus,textarea:focus{outline:none;border-color:var(--primary);box-shadow:0 0 0 3px rgba(99,102,241,.1)}
+.money-input{display:flex;align-items:stretch;width:100%}.money-input .currency-prefix{display:flex;align-items:center;justify-content:center;min-width:44px;padding:10px 12px;border:1px solid var(--border);border-right:0;border-radius:8px 0 0 8px;background:#f8fafc;color:#166534;font-weight:800}.money-input input{border-radius:0 8px 8px 0;text-align:right;font-variant-numeric:tabular-nums}.money-input input[readonly]{background:#f8fafc;font-weight:700}
+.pricing-breakdown{margin-top:10px;border:1px solid var(--border);border-radius:8px;overflow:hidden;background:#fff}.pricing-breakdown table{margin:0;font-size:.82rem}.pricing-breakdown th,.pricing-breakdown td{padding:8px 10px}.pricing-total{font-weight:800;background:#f8fafc}.helper-text{color:var(--text-muted);font-size:.76rem;line-height:1.45}.secondary-btn{background:transparent;border:1px solid var(--border);color:var(--text-main)}
+.btn{background:var(--primary);color:#fff;border:none;padding:10px 16px;font-size:.9rem;font-weight:600;border-radius:8px;cursor:pointer;transition:background .2s}.btn:hover{background:var(--primary-hover)}.btn-danger{background:var(--danger)}.btn-danger:hover{background:#dc2626}.btn-warning{background:var(--warning)}.btn-warning:hover{background:#d97706}.btn-success{background:var(--success)}.btn-success:hover{background:#059669}.btn-secondary{background:#64748b}.btn-secondary:hover{background:#475569}.btn-sm{padding:6px 12px;font-size:.8rem}
+.field-label-with-action{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:6px}.field-label-with-action label{margin:0}
+.mini-add-btn,.mini-remove-btn{width:28px;height:28px;min-width:28px;padding:0;border:1px solid var(--border);border-radius:6px;background:#fff;color:#475569;font-size:18px;line-height:1;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;font-weight:700}
+.mini-add-btn:hover{background:#eef2ff;color:#3730a3;border-color:#a5b4fc}
+.mini-remove-btn:hover{background:#fee2e2;color:#b91c1c;border-color:#fecaca}
+.item-code-row{display:flex;align-items:center;gap:7px;margin-bottom:8px}.item-code-row input{flex:1;min-width:0}
+.serial-column-container{max-height:300px;overflow-y:auto;border:1px solid var(--border);background:#f8fafc;border-radius:8px;padding:12px;display:flex;flex-direction:column;gap:10px}.serial-row-item{display:flex;align-items:center;gap:10px}.serial-row-item span{font-size:.8rem;font-weight:700;color:var(--text-muted);width:45px;flex-shrink:0}.serial-row-item input{flex:1}.serial-row-item select{max-width:140px}
+.table-wrapper{overflow-x:auto}table{width:100%;border-collapse:collapse;font-size:.9rem;margin-top:10px}th,td{padding:12px 14px;text-align:left;border-bottom:1px solid var(--border);vertical-align:middle}th{background:#f8fafc;font-weight:600;color:#475569;white-space:nowrap}td{background:#fff}
+.badge{padding:4px 10px;border-radius:20px;font-size:.75rem;font-weight:600;display:inline-block}.badge-success{background:#dcfce7;color:#166534}.badge-danger{background:#fee2e2;color:#991b1b}.badge-warning{background:#fef3c7;color:#92400e}.badge-muted{background:#f1f5f9;color:#64748b}.badge-info{background:#e0e7ff;color:#3730a3}
+.image-preview{width:100%;max-height:450px;object-fit:contain;border:2px dashed var(--border);border-radius:8px;background:#f8fafc;margin-top:8px}
+.invoice-meta-box{background:#f1f5f9;border:1px solid #cbd5e1;border-radius:8px;padding:16px;margin-top:12px;font-size:.85rem;display:grid;grid-template-columns:1fr 1fr;gap:14px}.invoice-field{display:flex;flex-direction:column;gap:5px}.invoice-field.full{grid-column:1/-1}
+.ocr-status{display:none;margin-top:10px;padding:12px 14px;border-radius:8px;font-size:.85rem;font-weight:600}.ocr-status.scanning{display:block;background:#eef2ff;color:#4338ca}.ocr-status.success{display:block;background:#dcfce7;color:#166534}.ocr-status.error{display:block;background:#fee2e2;color:#b91c1b}
+.stat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:15px;margin-bottom:20px}.stat-card{background:#fff;border:1px solid var(--border);border-radius:12px;padding:18px}.stat-card .stat-label{color:var(--text-muted);font-size:.8rem;margin-bottom:7px}.stat-card .stat-number{font-size:1.6rem;font-weight:700}
+.modal{position:fixed;inset:0;background:rgba(15,23,42,.75);display:none;align-items:center;justify-content:center;z-index:9999;padding:20px}.modal.active{display:flex}.modal-content{background:#fff;border-radius:12px;padding:20px;max-width:900px;width:100%;max-height:90vh;overflow-y:auto}.modal-content img{width:100%;max-height:75vh;object-fit:contain}
+.edit-modal-content{max-width:1100px}.edit-grid{display:grid;grid-template-columns:1fr 1fr;gap:15px}.edit-grid .full{grid-column:1/-1}.modal-actions{display:flex;gap:10px;justify-content:flex-end;margin-top:20px;padding-top:15px;border-top:1px solid var(--border)}
+#tab-unitdb .table-wrapper{overflow-x:auto;border-radius:10px}#tab-unitdb table{min-width:1450px}#tab-unitdb th{position:sticky;top:0;z-index:2;white-space:nowrap}#tab-unitdb td{vertical-align:top}
+.unit-group-single-row td{background:#fff;vertical-align:top;border-bottom:1px solid var(--border);padding:14px 16px}
+.unitdb-photo-wrap{display:flex;flex-direction:column;align-items:center;min-width:115px}
+.unit-group-photo{width:112px;height:132px;object-fit:contain;border:1px solid #94a3b8;border-radius:4px;background:#f8fafc;cursor:pointer;display:block}
+.unitdb-no-photo{display:flex;align-items:center;justify-content:center;color:var(--text-muted);font-size:.8rem;text-align:center}
+.unitdb-photo-label{font-size:.78rem;color:var(--text-muted);margin-top:5px;text-align:center}
+.unitdb-primary-value{font-weight:700;color:#1e40af;line-height:1.35}
+.unitdb-small-meta{font-size:.75rem;color:var(--text-muted);line-height:1.4;margin-top:3px}
+.unitdb-sku-title{font-weight:800;color:var(--primary);font-size:1rem;margin-bottom:7px}
+.unitdb-description-box{min-width:0;width:max-content;max-width:100%}.unitdb-description-table{width:max-content;max-width:100%;min-width:0;border-collapse:collapse;margin:0;font-size:.78rem;background:#fff}.unitdb-description-table th,.unitdb-description-table td{padding:7px 8px;border:1px solid var(--border);vertical-align:top}.unitdb-description-table td.description-text{white-space:normal;overflow-wrap:anywhere;word-break:normal;width:max-content;max-width:560px}.unitdb-description-table th{background:#f8fafc;color:#475569;font-weight:700;white-space:nowrap}.unitdb-description-table td.qty-cell{text-align:center;width:55px;font-weight:700}
+.unitdb-description-summary{margin-top:8px;padding:7px 9px;border:1px solid #c7d2fe;border-radius:6px;background:#eef2ff;color:#1d4ed8;font-size:.76rem;line-height:1.45;font-weight:700}
+.unitdb-action-inline{display:flex;flex-direction:column;gap:6px;min-width:100px}.unitdb-action-inline .btn{width:100%;padding:6px 12px;font-size:.8rem}
+.unitdb-serial-item{display:grid;grid-template-columns:24px minmax(65px,1fr);gap:6px;align-items:center;margin-bottom:6px;padding:4px 0}
+.unitdb-serial-number{font-weight:700;color:#475569}
+.unitdb-serial-value{font-weight:700;color:#1e293b;min-width:55px}
+.unitdb-status-item{margin-bottom:6px;white-space:nowrap}
+.unitdb-so-list,.unitdb-stack{display:flex;flex-direction:column;gap:6px}
+.unitdb-list-item{display:flex;gap:6px;align-items:flex-start;line-height:1.35;white-space:normal}
+.unitdb-list-no{color:var(--text-muted);font-weight:700;min-width:18px}
+.unitdb-stack-item{padding:6px 9px;border:1px solid var(--border);border-radius:7px;background:#fff;line-height:1.25;white-space:nowrap}
+@media(max-width:900px){body{flex-direction:column}aside{width:100%;min-height:auto;padding:15px}.grid-2,.grid-3,.invoice-meta-box,.edit-grid{grid-template-columns:1fr}.edit-grid .full{grid-column:auto}main{padding:20px}.stat-grid{grid-template-columns:1fr 1fr}}
+</style>
+</head>
+<body>
+<aside>
+<div>
+<h2>📦 JOEBZ Computer Sales and Services[cite: 1]</h2>
+<ul class="nav-links">
+<li><button onclick="switchTab('dashboard')" id="btn-dashboard" class="active">Overview & Catalog</button></li>
+<li><button onclick="switchTab('receiving')" id="btn-receiving">Sales Invoice Scanner</button></li>
+<li><button onclick="switchTab('unitdb')" id="btn-unitdb">Unit-Level Database</button></li>
+<li><button onclick="switchTab('desktop')" id="btn-desktop">Desktop Parts & Upgrades</button></li>
+<li><button onclick="switchTab('dispatch')" id="btn-dispatch">Outgoing Dispatch</button></li>
+<li><button onclick="switchTab('trash')" id="btn-trash">Retrieve / Trash</button></li>
+<li><button onclick="switchTab('logs')" id="btn-logs">Transaction Logs</button></li>
+</ul>
+</div>
+<div><button onclick="resetSystemData()" class="btn btn-danger btn-sm" style="width:100%;">Reset All Data</button></div>
+</aside>
+
+<main>
+<header><div><h1 id="pageTitle">Inventory Overview & Catalog</h1><p id="pageSubtitle">Real-time stock control and product master data</p></div></header>
+
+<div id="tab-dashboard" class="tab-content active">
+<div class="stat-grid">
+<div class="stat-card"><div class="stat-label">Product Masters</div><div class="stat-number" id="statProducts">0</div></div>
+<div class="stat-card"><div class="stat-label">Units in Stock</div><div class="stat-number" id="statStock">0</div></div>
+<div class="stat-card"><div class="stat-label">Dispatched Units</div><div class="stat-number" id="statDispatched">0</div></div>
+<div class="stat-card"><div class="stat-label">Transactions</div><div class="stat-number" id="statTransactions">0</div></div>
+</div>
+<div class="grid-2">
+<div class="card"><h3>Add New Product Master</h3><form id="productForm">
+<div class="form-group"><label>Product Name</label><input type="text" id="prodName" required placeholder="e.g. HARMAN JBL PARTYBOX 130 BLACK"></div>
+<div class="form-group"><label>SKU / Model ID</label><input type="text" id="prodSku" required placeholder="e.g. JBL-PB130"></div>
+<button type="submit" class="btn">Create Product Master</button>
+</form></div>
+<div class="card"><h3>Product Catalog Summary</h3><div class="table-wrapper"><table><thead><tr><th>SKU</th><th>Product Name</th><th>Active Stock</th><th>Actions</th></tr></thead><tbody id="inventoryTableBody"></tbody></table></div></div>
+</div>
+</div>
+
+<div id="tab-receiving" class="tab-content">
+<div class="card" style="max-width:1000px;margin:0 auto;">
+<h3>Upload Sales Invoice — Auto Scan & Extract</h3>
+<p style="color:var(--text-muted);font-size:.85rem;margin-bottom:18px;">Upload a clear photo or scan of the supplier's sales invoice. The browser will read visible text and extract invoice attributes.</p>
+<form id="receivingForm">
+<div class="form-group"><label>Sales Invoice Image</label><input type="file" id="invoiceImage" accept="image/*" required><img id="imgPreview" class="image-preview" src="" alt="Invoice Preview" style="display:none;"><div id="ocrStatus" class="ocr-status"></div></div>
+<div id="scannedMetaPanel" class="invoice-meta-box" style="display:none;">
+<div class="invoice-field"><label>Supplier / Company Name</label><input type="text" id="scanSupplier" placeholder="Detected supplier"></div>
+<div class="invoice-field"><label>Sales Invoice No.</label><input type="text" id="scanInvNo" placeholder="Detected invoice number"></div>
+<div class="invoice-field"><label>Customer Name</label><input type="text" id="scanCustName" placeholder="Detected customer"></div>
+<div class="invoice-field full"><div class="field-label-with-action"><label>Item Code / SO Number</label><button type="button" id="addItemCodeSOBtn" class="mini-add-btn" title="Add another Item Code / SO Number" aria-label="Add another Item Code / SO Number">+</button></div><div id="itemCodeSOFields"><div class="item-code-row"><input type="text" class="item-code-so" id="scanItemCodeSO" placeholder="Item Code / SO Number"><button type="button" class="mini-remove-btn remove-item-code" title="Remove Item Code / SO Number" aria-label="Remove Item Code / SO Number">−</button></div></div></div>
+<div class="invoice-field full"><label>Customer Address</label><input type="text" id="scanCustAddr" placeholder="Detected customer address"></div>
+<div class="invoice-field full"><label>Ship To: Address</label><input type="text" id="scanShipTo" placeholder="Detected shipping address"></div>
+<div class="invoice-field"><label>PO Number</label><input type="text" id="scanPoNo" placeholder="Detected PO number"></div>
+<div class="invoice-field"><label>Invoice Date</label><input type="date" id="scanDate"></div>
+<div class="invoice-field"><label>Other Date</label><input type="date" id="otherDate"></div>
+<div class="invoice-field"><label>Terms / S.R.</label><input type="text" id="scanTerms" placeholder="Detected terms"></div>
+<input type="hidden" id="invQty" value="0">
+<div class="invoice-field"><label>Unit of Measure</label><input type="text" id="invUm" value="EA"></div>
+<div class="invoice-field full">
+  <div style="display:grid; grid-template-columns: 140px 1fr; gap: 15px; align-items: end;">
+    <div class="field-label-with-action">
+      <label>QTY</label>
+      <div style="display:flex;gap:4px;">
+        <button type="button" id="removeQtyBtn" class="mini-remove-btn" title="Remove QTY Space" aria-label="Remove QTY Space">−</button>
+        <button type="button" id="addQtyBtn" class="mini-add-btn" title="Add QTY Space" aria-label="Add QTY Space">+</button>
+      </div>
+    </div>
+    <div class="field-label-with-action">
+      <label>Item Description</label>
+      <div style="display:flex;gap:4px;">
+        <button type="button" id="removeDescriptionBtn" class="mini-remove-btn" title="Remove Description Space" aria-label="Remove Description Space">−</button>
+        <button type="button" id="addDescriptionBtn" class="mini-add-btn" title="Add Description Space" aria-label="Add Description Space">+</button>
+      </div>
+    </div>
+  </div>
+  <div class="description-layout" style="display:grid; grid-template-columns: 140px 1fr; gap: 15px; margin-top: 6px;">
+    <div class="qty-column">
+      <div id="descriptionQtyFields" style="display:flex; flex-direction:column; gap:10px;">
+        <input type="number" class="description-qty" min="0" value="0" placeholder="QTY">
+      </div>
+      <div class="description-total-qty" style="margin-top:14px;"><label><strong>Total Qty. Delivered</strong></label><input type="number" id="totalQtyDelivered" min="0" value="0" readonly></div>
+    </div>
+    <div class="description-column">
+      <div id="descriptionFields" style="display:flex; flex-direction:column; gap:10px;">
+        <div class="description-row"><textarea id="invDesc1" class="invoice-description" rows="3" placeholder="Item description"></textarea></div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="invoice-field"><label>Unit Cost / Unit Price</label><div class="money-input"><span class="currency-prefix">₱</span><input type="text" id="unitCost" inputmode="decimal" value="0" placeholder="0.00"></div></div>
+<div class="invoice-field"><label>Amount / Net Amount</label><div class="money-input"><span class="currency-prefix">₱</span><input type="text" id="netAmount" inputmode="decimal" value="0" placeholder="0.00" readonly></div></div>
+<div class="invoice-field"><label>Total Cost</label><div class="money-input"><span class="currency-prefix">₱</span><input type="text" id="totalCost" inputmode="decimal" value="0" placeholder="0.00" readonly></div></div>
+<div class="invoice-field full"><label>Quantity Pricing Breakdown</label><div id="pricingBreakdown" class="pricing-breakdown"><div style="padding:10px;color:var(--text-muted);font-size:.82rem;">Enter QTY values and unit price.</div></div></div>
+<div class="invoice-field full"><label>Remarks</label><textarea id="invoiceRemarks" rows="3" placeholder="Remarks"></textarea></div>
+</div>
+<hr style="margin:20px 0;border:0;border-top:1px solid var(--border);">
+<div class="grid-2">
+<div class="form-group"><label>Map to Product SKU</label><select id="recProduct" required></select></div>
+<div class="form-group"><label>Quantity to Record</label><input type="number" id="invoiceQtyConfirm" min="0" value="0" readonly required></div>
+</div>
+<div class="form-group">
+<div class="field-label-with-action">
+  <label>Unique Serial Numbers — One Serial Per Unit (Type `---` or leave blank for undelivered / partial items)</label>
+  <button type="button" class="btn secondary-btn btn-sm" onclick="fillAllUndeliveredSerials()">Set Undelivered (---)</button>
+</div>
+<div id="incomingSerialsList" class="serial-column-container"><span style="color:var(--text-muted);font-size:.85rem;">None (0 units)</span></div>
+</div>
+<button type="submit" class="btn" style="margin-top:10px;">Process Invoice & Record Units</button>
+</form>
+</div>
+</div>
+
+<div id="tab-unitdb" class="tab-content">
+<div class="card">
+<h3>Unit-Level Database</h3>
+<p style="color:var(--text-muted);font-size:.85rem;margin-bottom:15px;">Identical items from the same invoice are grouped into one row with consolidated serials and a single Edit/Delete action.</p>
+<div style="margin-bottom:15px;">
+  <input type="text" id="unitDbSearchInput" placeholder="🔍 Search by Serial Number, SKU, Description, Customer, Invoice..." style="padding:10px 14px;border:1px solid var(--border);border-radius:8px;width:100%;max-width:480px;">
+</div>
+<div class="table-wrapper"><table>
+<thead><tr>
+<th>Photo</th>
+<th>Invoice</th>
+<th>Supplier</th>
+<th>SKU & Description</th>
+<th>Serial Numbers</th>
+<th>Customer</th>
+<th>Ship To</th>
+<th>Item Code / SO</th>
+<th>Unit Price</th>
+<th>Amount</th>
+<th>Total Cost</th>
+<th>PO</th>
+<th>Status</th>
+<th>Actions</th>
+</tr></thead>
+<tbody id="unitDbTableBody"></tbody>
+</table></div>
+</div>
+</div>
+
+<div id="tab-desktop" class="tab-content">
+<div class="card" style="max-width:900px;margin:0 auto;">
+<h3>Desktop Component Tracking, Additions & Part Changes</h3>
+<p style="color:var(--text-muted);font-size:.85rem;margin-bottom:18px;">Search and select a Desktop unit's serial number or description to log part installations, upgrades, or removals with individual component serial numbers.</p>
+<form id="desktopPartsForm">
+<input type="hidden" id="editDesktopLogId" value="">
+<div class="grid-2">
+<div class="form-group" style="position:relative;">
+  <label>Target Desktop / Base Unit Serial Number & Description</label>
+  <input type="text" id="desktopBaseSearchInput" placeholder="🔍 Search serial number or item description..." autocomplete="off" required>
+  <input type="hidden" id="desktopBaseSerial" required>
+  <div id="desktopDropdownList" style="display:none;position:absolute;top:100%;left:0;right:0;max-height:220px;overflow-y:auto;background:#fff;border:1px solid var(--border);border-radius:8px;box-shadow:0 4px 6px -1px rgba(0,0,0,.1);z-index:100;margin-top:4px;"></div>
+</div>
+<div class="form-group">
+  <label>Action Type</label>
+  <select id="desktopActionType" required>
+    <option value="Add Part">Add Part / Component</option>
+    <option value="Change / Replace Part">Change / Replace Part</option>
+    <option value="Remove Part">Remove Part</option>
+  </select>
+</div>
+</div>
+<div class="grid-2">
+<div class="form-group">
+  <label>Component / Part Name</label>
+  <input type="text" id="partName" required placeholder="e.g. RAM 16GB DDR4, SSD 512GB NVMe, GPU RTX 3060">
+</div>
+<div class="form-group">
+  <label>Serial Number of Part Added / Installed</label>
+  <input type="text" id="partSerialAdded" placeholder="e.g. SN-RAM-98834 or ---">
+</div>
+</div>
+<div class="form-group" id="partRemovedGroup">
+  <label>Serial Number of Part Removed / Replaced (If changing or removing)</label>
+  <input type="text" id="partSerialRemoved" placeholder="e.g. OLD-SN-RAM-112 or ---">
+</div>
+<div class="form-group">
+  <label>Technician Notes / Remarks</label>
+  <textarea id="desktopPartRemarks" rows="2" placeholder="Notes on component upgrade or replacement"></textarea>
+</div>
+<div style="display:flex;gap:10px;">
+  <button type="submit" class="btn" id="desktopSubmitBtn">Record Component Modification</button>
+  <button type="button" class="btn btn-secondary" id="desktopCancelEditBtn" style="display:none;" onclick="cancelDesktopEdit()">Cancel Edit</button>
+</div>
+</form>
+</div>
+
+<div class="card" style="max-width:1200px;margin:20px auto 0;">
+<h3>Desktop Components & Upgrade History</h3>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr>
+<th>Timestamp</th>
+<th>Base Desktop Serial / Description</th>
+<th>Action</th>
+<th>Component Name</th>
+<th>Part Serial Added</th>
+<th>Part Serial Removed</th>
+<th>Remarks</th>
+<th>Action</th>
+</tr>
+</thead>
+<tbody id="desktopPartsTableBody"></tbody>
+</table>
+</div>
+</div>
+</div>
+
+<div id="tab-dispatch" class="tab-content">
+<div class="card" style="max-width:800px;margin:0 auto;"><h3>Outgoing Order Fulfillment & Serial Checkout</h3><form id="orderForm">
+<div class="grid-2"><div class="form-group"><label>Select Product SKU</label><select id="orderProduct" required></select></div><div class="form-group"><label>Quantity to Dispatch</label><input type="number" id="orderQty" min="0" value="0" required></div></div>
+<div class="form-group"><label>Outgoing Serial Numbers</label><div id="outgoingSerialsList" class="serial-column-container"><span style="color:var(--text-muted);font-size:.85rem;">None (0 units selected for delivery)</span></div></div>
+<button type="submit" class="btn">Fulfill Order & Update Status</button>
+</form></div>
+</div>
+
+<div id="tab-trash" class="tab-content">
+  <div class="card">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; border-bottom: 1px solid var(--border); padding-bottom: 10px;">
+      <h3 style="margin: 0; border: none; padding: 0;">Retrieve / Trash</h3>
+      <button type="button" class="btn btn-danger btn-sm" onclick="clearAllTrash()">Clear All Trash</button>
+    </div>
+    <p style="color:var(--text-muted);font-size:.85rem;margin-bottom:15px;">Deleted products, unit records, and desktop part logs are temporarily stored here and can be restored.</p>
+    <div class="table-wrapper">
+      <table>
+        <thead><tr><th>Type</th><th>Details</th><th>Deleted Timestamp</th><th>Action</th></tr></thead>
+        <tbody id="trashTableBody"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<div id="tab-logs" class="tab-content"><div class="card"><h3>System Transaction History</h3><div class="table-wrapper"><table><thead><tr><th>Timestamp</th><th>Invoice No.</th><th>Action Type</th><th>SKU</th><th>Details</th></tr></thead><tbody id="logsTableBody"></tbody></table></div></div></div>
+</main>
+
+<!-- IMAGE MODAL -->
+<div id="imageModal" class="modal" onclick="closeImageModal(event)"><div class="modal-content"><button class="btn btn-danger btn-sm" onclick="closeImageModal()" style="float:right;margin-bottom:10px;">Close</button><div style="clear:both;"></div><img id="modalImage" src="" alt="Invoice Image"></div></div>
+
+<!-- FULL UNIT EDIT MODAL -->
+<div id="editUnitModal" class="modal" onclick="closeEditUnitModal(event)">
+<div class="modal-content edit-modal-content">
+<div style="display:flex;justify-content:space-between;align-items:center;gap:10px;">
+<h2>Edit Complete Unit Record</h2><button class="btn btn-danger btn-sm" onclick="closeEditUnitModal()">Close</button>
+</div>
+<p class="helper-text" style="margin:6px 0 18px;">Edit all details, adjust quantities, add or remove serial numbers, and set individual unit statuses.</p>
+<form id="editUnitForm">
+<input type="hidden" id="editGroupKey">
+<div class="edit-grid">
+<div class="form-group"><label>Invoice No.</label><input id="editInvoiceNo"></div>
+<div class="form-group"><label>Supplier / Company</label><input id="editSupplier"></div>
+<div class="form-group"><label>Product SKU</label><select id="editSku"></select></div>
+<div class="form-group"><label>Customer Name</label><input id="editCustomer"></div>
+<div class="form-group"><label>Customer Address</label><input id="editCustomerAddress"></div>
+<div class="form-group full"><label>Ship To Address</label><input id="editShipTo"></div>
+<div class="form-group full"><div class="field-label-with-action"><label>Item Code / SO Number(s)</label><button type="button" class="mini-add-btn" onclick="addEditSOField()" title="Add Item Code / SO Number" aria-label="Add Item Code / SO Number">+</button></div><div id="editItemCodeSOFields"></div></div>
+<div class="form-group"><label>PO Number</label><input id="editPoNo"></div>
+<div class="form-group"><label>Invoice Date</label><input type="date" id="editInvoiceDate"></div>
+<div class="form-group"><label>Other Date</label><input type="date" id="editOtherDate"></div>
+<div class="form-group"><label>Terms / S.R.</label><input id="editTerms"></div>
+<div class="form-group"><label>Unit of Measure</label><input id="editUm"></div>
+
+<!-- Editable Total Qty. Delivered with QTY controls -->
+<div class="form-group full">
+  <div style="display:grid; grid-template-columns: 140px 1fr; gap: 15px; align-items: end;">
+    <div class="field-label-with-action">
+      <label>QTY</label>
+      <div style="display:flex;gap:4px;">
+        <button type="button" class="mini-remove-btn" onclick="removeEditQtyField()" title="Remove QTY Space" aria-label="Remove QTY Space">−</button>
+        <button type="button" class="mini-add-btn" onclick="addEditQtyField()" title="Add QTY Space" aria-label="Add QTY Space">+</button>
+      </div>
+    </div>
+    <div class="field-label-with-action">
+      <label>Item Description</label>
+      <div style="display:flex;gap:4px;">
+        <button type="button" class="mini-remove-btn" onclick="removeEditDescriptionField()" title="Remove Description Space" aria-label="Remove Description Space">−</button>
+        <button type="button" class="mini-add-btn" onclick="addEditDescriptionField()" title="Add Description Space" aria-label="Add Description Space">+</button>
+      </div>
+    </div>
+  </div>
+  <div class="description-layout" style="display:grid; grid-template-columns: 140px 1fr; gap: 15px; margin-top: 6px;">
+    <div class="qty-column">
+      <div id="editDescriptionQtyFields" style="display:flex; flex-direction:column; gap:10px;">
+        <input type="number" class="edit-description-qty" min="0" value="0" placeholder="QTY" oninput="calculateEditTotalFromQtyFields()">
+      </div>
+      <div class="description-total-qty" style="margin-top:14px;">
+        <label><strong>Total Qty. Delivered</strong></label>
+        <input type="number" id="editTotalQty" min="0" value="0" oninput="onEditTotalQtyManualInput()">
+      </div>
+    </div>
+    <div class="description-column">
+      <div id="editDescriptionFields" style="display:flex; flex-direction:column; gap:10px;">
+        <div class="description-row"><textarea class="edit-description-value" rows="3" placeholder="Item description"></textarea></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="form-group"><label>Unit Price</label><div class="money-input"><span class="currency-prefix">₱</span><input id="editUnitCost" inputmode="decimal"></div></div>
+<div class="form-group"><label>Net / Amount</label><div class="money-input"><span class="currency-prefix">₱</span><input id="editNetAmount" inputmode="decimal" readonly></div></div>
+<div class="form-group full"><label>Total Cost</label><div class="money-input"><span class="currency-prefix">₱</span><input id="editTotalCost" inputmode="decimal" readonly></div></div>
+<div class="form-group full"><div class="field-label-with-action"><label>Serial Number(s) & Individual Status (One per unit)</label><button type="button" class="mini-add-btn" onclick="addEditSerialRow()" title="Add Serial Number" aria-label="Add Serial Number">+</button></div><div id="editSerialsContainer" class="serial-column-container"></div></div>
+<div class="form-group full"><label>Remarks</label><textarea id="editRemarks" rows="4"></textarea></div>
+</div>
+<div class="modal-actions"><button type="button" class="btn btn-secondary" onclick="closeEditUnitModal()">Cancel</button><button type="submit" class="btn btn-success">Save All Changes</button></div>
+</form>
+</div>
+</div>
+
+<script>
+let inventory=JSON.parse(localStorage.getItem('nx_inv_v7'))||[];
+let unitDatabase=JSON.parse(localStorage.getItem('nx_unitdb_v7'))||[];
+let desktopPartsLog=JSON.parse(localStorage.getItem('nx_desktop_parts_v1'))||[];
+let trashBin=JSON.parse(localStorage.getItem('nx_trash_v7'))||[];
+let logs=JSON.parse(localStorage.getItem('nx_logs_v7'))||[];
+
+const INVOICE_IMAGE_DB_NAME='joebz_invoice_media_v1',INVOICE_IMAGE_STORE='invoiceImages';
+let invoiceImageDBPromise=null;
+const invoiceImageObjectURLs=new Map();
+
+function openInvoiceImageDB(){
+ if(invoiceImageDBPromise)return invoiceImageDBPromise;
+ invoiceImageDBPromise=new Promise((resolve,reject)=>{
+  if(!('indexedDB'in window)){reject(new Error('IndexedDB unavailable'));return}
+  const request=indexedDB.open(INVOICE_IMAGE_DB_NAME,1);
+  request.onupgradeneeded=e=>{const db=e.target.result;if(!db.objectStoreNames.contains(INVOICE_IMAGE_STORE))db.createObjectStore(INVOICE_IMAGE_STORE,{keyPath:'key'})};
+  request.onsuccess=()=>resolve(request.result);request.onerror=()=>reject(request.error);
+ });return invoiceImageDBPromise;
+}
+function invoiceImageKey(invoiceNo){return'invoice:'+String(invoiceNo||'untitled').trim().toLowerCase()}
+function compressInvoiceImage(dataUrl){
+ return new Promise((resolve,reject)=>{
+  if(!dataUrl){reject(new Error('No image'));return}
+  const img=new Image();
+  img.onload=()=>{
+   try{
+    const maxWidth=1800,scale=Math.min(1,maxWidth/img.naturalWidth),width=Math.max(1,Math.round(img.naturalWidth*scale)),height=Math.max(1,Math.round(img.naturalHeight*scale));
+    const canvas=document.createElement('canvas');canvas.width=width;canvas.height=height;
+    canvas.getContext('2d').drawImage(img,0,0,width,height);
+    canvas.toBlob(blob=>blob?resolve(blob):reject(new Error('Compression failed')),'image/jpeg',.78);
+   }catch(err){reject(err)}
+  };img.onerror=()=>reject(new Error('Invalid image'));img.src=dataUrl;
+ });
+}
+async function saveInvoiceImageToDB(invoiceNo,dataUrl){
+ if(!dataUrl)return'';const key=invoiceImageKey(invoiceNo),blob=await compressInvoiceImage(dataUrl),db=await openInvoiceImageDB();
+ await new Promise((resolve,reject)=>{const tx=db.transaction(INVOICE_IMAGE_STORE,'readwrite');tx.objectStore(INVOICE_IMAGE_STORE).put({key,blob,updatedAt:Date.now()});tx.oncomplete=resolve;tx.onerror=()=>reject(tx.error)});
+ return key;
+}
+async function getInvoiceImageBlob(key){
+ if(!key)return null;const db=await openInvoiceImageDB();
+ return new Promise((resolve,reject)=>{const tx=db.transaction(INVOICE_IMAGE_STORE,'readonly'),req=tx.objectStore(INVOICE_IMAGE_STORE).get(key);req.onsuccess=()=>resolve(req.result?req.result.blob:null);req.onerror=()=>reject(req.error)});
+}
+async function viewInvoiceImageByKey(key){
+ if(!key){alert('No scanned invoice photo is attached.');return}
+ try{let url=invoiceImageObjectURLs.get(key);if(!url){const blob=await getInvoiceImageBlob(key);if(!blob){alert('Invoice photo not found in storage.');return}url=URL.createObjectURL(blob);invoiceImageObjectURLs.set(key,url)}window.viewInvoiceImage(url)}catch(e){alert('Unable to open invoice photo.')}
+}
+async function hydrateInvoiceImageElements(){
+ const elements=document.querySelectorAll('[data-invoice-image-key]');
+ for(const img of elements){const key=img.getAttribute('data-invoice-image-key');if(!key)continue;try{let url=invoiceImageObjectURLs.get(key);if(!url){const blob=await getInvoiceImageBlob(key);if(!blob)continue;url=URL.createObjectURL(blob);invoiceImageObjectURLs.set(key,url)}img.src=url;img.style.display='block'}catch(e){}}
+}
+function saveData(){
+ try{
+  localStorage.setItem('nx_inv_v7',JSON.stringify(inventory));
+  localStorage.setItem('nx_unitdb_v7',JSON.stringify(unitDatabase));
+  localStorage.setItem('nx_desktop_parts_v1',JSON.stringify(desktopPartsLog));
+  localStorage.setItem('nx_trash_v7',JSON.stringify(trashBin));
+  localStorage.setItem('nx_logs_v7',JSON.stringify(logs));
+ }
+ catch(e){alert('Storage quota reached or error saving data.')}renderAll();
+}
+function parseMoney(value){if(value===null||value===undefined)return 0;return parseFloat(String(value).replace(/[₱$\\s]/g, '').replace(/,/g, ''))||0}
+function formatMoney(val){return'₱'+new Intl.NumberFormat('en-PH',{minimumFractionDigits:2,maximumFractionDigits:2}).format(val||0)}
+function escapeHTML(str){if(str===null||str===undefined)return'';return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;')}
+
+const prodForm=document.getElementById('productForm'),receivingForm=document.getElementById('receivingForm'),orderForm=document.getElementById('orderForm'),desktopPartsForm=document.getElementById('desktopPartsForm'),invoiceImageInput=document.getElementById('invoiceImage'),imgPreview=document.getElementById('imgPreview'),scannedMetaPanel=document.getElementById('scannedMetaPanel'),ocrStatus=document.getElementById('ocrStatus'),invQtyInput=document.getElementById('invQty'),totalQtyDeliveredInput=document.getElementById('totalQtyDelivered'),invoiceQtyConfirm=document.getElementById('invoiceQtyConfirm'),descriptionFields=document.getElementById('descriptionFields'),descriptionQtyFields=document.getElementById('descriptionQtyFields'),addDescriptionBtn=document.getElementById('addDescriptionBtn'),removeDescriptionBtn=document.getElementById('removeDescriptionBtn'),addQtyBtn=document.getElementById('addQtyBtn'),removeQtyBtn=document.getElementById('removeQtyBtn'),itemCodeSOFields=document.getElementById('itemCodeSOFields'),addItemCodeSOBtn=document.getElementById('addItemCodeSOBtn'),pricingBreakdown=document.getElementById('pricingBreakdown'),incomingSerialsList=document.getElementById('incomingSerialsList'),orderQtyInput=document.getElementById('orderQty'),outgoingSerialsList=document.getElementById('outgoingSerialsList'),unitCostInput=document.getElementById('unitCost'),netAmountInput=document.getElementById('netAmount'),totalCostInput=document.getElementById('totalCost'),unitDbSearchInput=document.getElementById('unitDbSearchInput');
+let uploadedImageBase64='';
+
+function switchTab(tabId){
+ document.querySelectorAll('.tab-content').forEach(el=>el.classList.remove('active'));document.querySelectorAll('.nav-links button').forEach(el=>el.classList.remove('active'));
+ document.getElementById('tab-'+tabId).classList.add('active');document.getElementById('btn-'+tabId).classList.add('active');
+ const titles={
+  dashboard:['Inventory Overview & Catalog','Real-time stock control and product master data'],
+  receiving:['Sales Invoice Scanner','Upload supplier invoice and automatically extract details'],
+  unitdb:['Unit-Level Database','Grouped physical unit records by invoice/photo'],
+  desktop:['Desktop Parts & Upgrades','Track component additions, serial numbers, and part replacements'],
+  dispatch:['Outgoing Dispatch','Checkout physical units using their serial numbers'],
+  trash:['Retrieve / Trash','Restore accidentally deleted records'],
+  logs:['Transaction Logs','Complete audit trail of inventory activity']
+ };
+ document.getElementById('pageTitle').textContent=titles[tabId][0];document.getElementById('pageSubtitle').textContent=titles[tabId][1];
+}
+function calculateTotalQtyDelivered(){
+ const qtyInputs=Array.from(descriptionQtyFields.querySelectorAll('.description-qty')),total=qtyInputs.reduce((sum,input)=>sum+Math.max(0,parseInt(input.value,10)||0),0);
+ totalQtyDeliveredInput.value=total;invQtyInput.value=total;invoiceQtyConfirm.value=total;generateIncomingSerialFields(total);renderPricingBreakdown();return total;
+}
+function calculateInvoiceTotals(){const qty=calculateTotalQtyDelivered(),cost=Math.max(0,parseMoney(unitCostInput.value)),total=qty*cost;netAmountInput.value=total.toFixed(2);totalCostInput.value=total.toFixed(2)}
+function renderPricingBreakdown(){
+ const qtys=Array.from(descriptionQtyFields.querySelectorAll('.description-qty')).map(i=>Math.max(0,parseInt(i.value)||0)),cost=Math.max(0,parseMoney(unitCostInput.value));
+ if(!qtys.length||qtys.every(q=>q===0)){pricingBreakdown.innerHTML='<div style="padding:10px;color:var(--text-muted);font-size:.82rem;">Enter QTY values and unit price.</div>';return}
+ let html='<table><thead><tr><th>#</th><th>QTY</th><th>Unit Price</th><th>Line Amount</th></tr></thead><tbody>';let total=0;
+ qtys.forEach((q,i)=>{const line=q*cost;total+=line;html+=`<tr><td>${i+1}</td><td>${q}</td><td>${formatMoney(cost)}</td><td>${formatMoney(line)}</td></tr>`});
+ html+=`</tbody><tfoot><tr class="pricing-total"><td colspan="3">Total</td><td>${formatMoney(total)}</td></tr></tfoot></table>`;pricingBreakdown.innerHTML=html;
+}
+
+function addDescriptionField(value=''){
+ const row=document.createElement('div');row.className='description-row';const textarea=document.createElement('textarea');textarea.className='invoice-description';textarea.rows=3;textarea.placeholder=`Item description`;textarea.value=value;
+ row.appendChild(textarea);descriptionFields.appendChild(row);
+}
+function removeDescriptionField(){
+ const rows=descriptionFields.querySelectorAll('.description-row');
+ if(rows.length>1){rows[rows.length-1].remove();}
+}
+
+function addQtyField(value=''){
+ const input=document.createElement('input');input.type='number';input.className='description-qty';input.min='0';input.value=value;input.placeholder='';input.addEventListener('input',calculateInvoiceTotals);descriptionQtyFields.appendChild(input);
+ calculateInvoiceTotals();
+}
+function removeQtyField(){
+ const qtys=descriptionQtyFields.querySelectorAll('.description-qty');
+ if(qtys.length>1){qtys[qtys.length-1].remove();calculateInvoiceTotals();}
+}
+
+function addItemCodeSOField(value=''){
+ const row=document.createElement('div');row.className='item-code-row';
+ const input=document.createElement('input');input.type='text';input.className='item-code-so';input.placeholder='Item Code / SO Number';input.value=value||'';
+ const removeBtn=document.createElement('button');removeBtn.type='button';removeBtn.className='mini-remove-btn remove-item-code';removeBtn.title='Remove Item Code / SO Number';removeBtn.setAttribute('aria-label','Remove Item Code / SO Number');removeBtn.textContent='−';
+ removeBtn.addEventListener('click',()=>{row.remove();if(!itemCodeSOFields.querySelector('.item-code-row'))addItemCodeSOField('')});
+ row.append(input,removeBtn);itemCodeSOFields.appendChild(row);
+}
+const firstItemCodeRow=itemCodeSOFields.querySelector('.item-code-row');
+if(firstItemCodeRow&&!firstItemCodeRow.querySelector('.mini-remove-btn')){
+ const removeBtn=document.createElement('button');removeBtn.type='button';removeBtn.className='mini-remove-btn remove-item-code';removeBtn.title='Remove Item Code / SO Number';removeBtn.setAttribute('aria-label','Remove Item Code / SO Number');removeBtn.textContent='−';
+ removeBtn.addEventListener('click',()=>{firstItemCodeRow.remove();if(!itemCodeSOFields.querySelector('.item-code-row'))addItemCodeSOField('')});
+ firstItemCodeRow.appendChild(removeBtn);
+}
+addItemCodeSOBtn.addEventListener('click',()=>addItemCodeSOField());
+
+addDescriptionBtn.addEventListener('click',()=>addDescriptionField());
+removeDescriptionBtn.addEventListener('click',()=>removeDescriptionField());
+addQtyBtn.addEventListener('click',()=>addQtyField(''));
+removeQtyBtn.addEventListener('click',()=>removeQtyField());
+
+const firstDescQty=document.querySelector('.description-qty');if(firstDescQty)firstDescQty.addEventListener('input',calculateInvoiceTotals);unitCostInput.addEventListener('input',calculateInvoiceTotals);totalQtyDeliveredInput.addEventListener('input',calculateInvoiceTotals);
+function generateIncomingSerialFields(count){incomingSerialsList.innerHTML='';count=parseInt(count)||0;if(count<=0){incomingSerialsList.innerHTML='<span style="color:var(--text-muted);font-size:.85rem;">None (0 units)</span>';return}for(let i=1;i<=count;i++){const row=document.createElement('div');row.className='serial-row-item';row.innerHTML=`<span>[${i}]</span><input type="text" class="incoming-sn" placeholder="Enter unique serial or type --- for partial/undelivered">`;incomingSerialsList.appendChild(row)}}
+function fillAllUndeliveredSerials(){const inputs=incomingSerialsList.querySelectorAll('.incoming-sn');inputs.forEach(input=>{if(!input.value.trim())input.value='---';});}
+function generateOutgoingSerialFields(count){outgoingSerialsList.innerHTML='';count=parseInt(count)||0;if(count<=0){outgoingSerialsList.innerHTML='<span style="color:var(--text-muted);font-size:.85rem;">None (0 units selected for delivery)</span>';return}for(let i=1;i<=count;i++){const row=document.createElement('div');row.className='serial-row-item';row.innerHTML=`<span>[${i}]</span><input type="text" class="outgoing-sn" required placeholder="Enter active serial for unit ${i}">`;outgoingSerialsList.appendChild(row)}}
+orderQtyInput.addEventListener('input',function(){generateOutgoingSerialFields(this.value)});
+
+invoiceImageInput.addEventListener('change',async function(event){
+ const file=event.target.files[0];if(!file)return;const reader=new FileReader();
+ reader.onload=e=>{uploadedImageBase64=e.target.result;imgPreview.src=uploadedImageBase64;imgPreview.style.display='block';scannedMetaPanel.style.display='grid'};reader.readAsDataURL(file);
+ ocrStatus.className='ocr-status scanning';ocrStatus.style.display='block';ocrStatus.innerHTML='🔍 Reading invoice text...';
+ try{const result=await Tesseract.recognize(file,'eng');const data=extractInvoiceData(result.data.text||'');
+ document.getElementById('scanSupplier').value=data.supplier;document.getElementById('scanInvNo').value=data.invoiceNo;document.getElementById('scanCustName').value=data.customerName;document.getElementById('scanCustAddr').value=data.customerAddress;document.getElementById('scanShipTo').value=data.shipTo;document.getElementById('scanPoNo').value=data.poNo;document.getElementById('scanDate').value=data.invoiceDate;document.getElementById('otherDate').value=data.otherDate;document.getElementById('scanTerms').value=data.terms;document.getElementById('invUm').value=data.um;document.getElementById('invDesc1').value=data.description1;document.getElementById('scanItemCodeSO').value=data.itemCodeSO;unitCostInput.value=data.unitCost?data.unitCost.toFixed(2):'0.00';
+ if(firstDescQty)firstDescQty.value=data.quantity||0;calculateInvoiceTotals();ocrStatus.className='ocr-status success';ocrStatus.innerHTML='✅ Invoice successfully scanned and extracted!';
+ }catch(err){ocrStatus.className='ocr-status error';ocrStatus.innerHTML='❌ OCR could not read this invoice. You can enter details manually.'}
+});
+function extractInvoiceData(text){return{supplier:'',invoiceNo:'',customerName:'',customerAddress:'',shipTo:'',poNo:'',invoiceDate:'',otherDate:'',terms:'',quantity:1,um:'EA',description1:text.slice(0,100),itemCodeSO:'',unitCost:0}}
+prodForm.addEventListener('submit',event=>{event.preventDefault();const name=document.getElementById('prodName').value.trim(),sku=document.getElementById('prodSku').value.trim().toUpperCase();if(!name||!sku)return;if(inventory.some(item=>item.sku===sku)){alert('SKU already exists.');return}inventory.push({sku,name,dateCreated:new Date().toLocaleString()});prodForm.reset();saveData();alert('Product master created successfully!')});
+
+receivingForm.addEventListener('submit',async event=>{
+ event.preventDefault();
+ if(!confirm('Are you sure you want to process this invoice and record the units?')) return;
+ const sku=document.getElementById('recProduct').value,invQty=parseInt(totalQtyDeliveredInput.value||invoiceQtyConfirm.value)||0;
+ const descriptionValues=Array.from(document.querySelectorAll('.invoice-description')).map(i=>i.value.trim()).filter(Boolean),description=descriptionValues.join('\n\n'),invoiceNo=document.getElementById('scanInvNo').value.trim()||'UNKNOWN',customerName=document.getElementById('scanCustName').value.trim()||'UNKNOWN',supplier=document.getElementById('scanSupplier').value.trim()||'UNKNOWN',customerAddress=document.getElementById('scanCustAddr').value.trim(),shipTo=document.getElementById('scanShipTo').value.trim(),poNo=document.getElementById('scanPoNo').value.trim();
+ const itemCodeSOValues=Array.from(document.querySelectorAll('.item-code-so')).map(i=>i.value.trim()).filter(Boolean),itemCodeSO=itemCodeSOValues[0]||'',itemCodeSOList=itemCodeSOValues.length?itemCodeSOValues:[''],invoiceDate=document.getElementById('scanDate').value.trim(),otherDate=document.getElementById('otherDate').value.trim(),terms=document.getElementById('scanTerms').value.trim(),um=document.getElementById('invUm').value.trim()||'EA',unitCost=parseMoney(unitCostInput.value),netAmount=parseMoney(netAmountInput.value),totalCost=parseMoney(totalCostInput.value),remarks=document.getElementById('invoiceRemarks').value.trim(),product=inventory.find(item=>item.sku===sku);
+ if(!product){alert('Please select a valid product SKU.');return}
+ const snInputs=document.querySelectorAll('.incoming-sn'),newSerials=[];
+ snInputs.forEach(input=>{let v=input.value.trim();if(!v)v='---';newSerials.push(v)});
+ if(newSerials.length!==invQty){alert(`Quantity is ${invQty}, but ${newSerials.length} serial number(s) entered.`);return}
+ 
+ const activeSerials=newSerials.filter(s=>s!=='---');
+ const normalizedActive=activeSerials.map(s=>s.toLowerCase());
+ if(new Set(normalizedActive).size!==normalizedActive.length){alert('Active serial numbers must be unique.');return}
+ if(unitDatabase.some(u=>u.serialNumber!=='---'&&normalizedActive.includes(String(u.serialNumber||'').toLowerCase()))){alert('One or more serial numbers already exist.');return}
+
+ let savedImageKey='';if(uploadedImageBase64){try{savedImageKey=await saveInvoiceImageToDB(invoiceNo,uploadedImageBase64)}catch(e){}}
+ const timestamp=new Date().toLocaleString();
+ 
+ newSerials.forEach(sn=>{
+  const unitStatus=(sn==='---')?'Partially':'In Stock';
+  unitDatabase.push({
+   id:'U_'+Math.random().toString(36).substr(2,12),
+   invoiceNo,
+   supplier,
+   sku,
+   name:description||product.name,
+   descriptionValues,
+   descriptionQtyValues:Array.from(descriptionQtyFields.querySelectorAll('.description-qty')).map(i=>Math.max(0,parseInt(i.value,10)||0)),
+   serialNumber:sn,
+   customer:customerName,
+   customerAddress,
+   shipTo,
+   itemCodeSO,
+   itemCodeSOList,
+   poNo,
+   invoiceDate,
+   otherDate,
+   terms,
+   um,
+   totalQtyDelivered:invQty,
+   unitCost,
+   netAmount,
+   totalCost,
+   remarks,
+   imageKey:savedImageKey,
+   status:unitStatus,
+   dateAdded:timestamp
+  });
+ });
+
+ logs.unshift({date:timestamp,invoiceNo,type:'SALES INVOICE RECEIVED',sku,details:`Added ${invQty} units`});saveData();alert('Invoice processed and recorded successfully!');receivingForm.reset();uploadedImageBase64='';imgPreview.style.display='none';scannedMetaPanel.style.display='none';calculateInvoiceTotals();
+});
+
+function getUnitGroupKey(unit){return `${unit.imageKey||'NO_IMAGE'}||${String(unit.invoiceNo||'').trim().toLowerCase()}||${String(unit.sku||'').trim().toUpperCase()}`}
+function groupUnitsByInvoicePhoto(){
+ const groups=new Map();unitDatabase.forEach(unit=>{const key=getUnitGroupKey(unit);if(!groups.has(key))groups.set(key,[]);groups.get(key).push(unit)});return Array.from(groups.values());
+}
+function buildDescriptionHTML(unit){
+ const descriptions=(unit.descriptionValues&&unit.descriptionValues.length?unit.descriptionValues:[unit.name||'']).filter(Boolean);
+ let qtys=Array.isArray(unit.descriptionQtyValues)?unit.descriptionQtyValues.map(q=>Math.max(0,parseInt(q,10)||0)):[];
+ if(!qtys.length)qtys=descriptions.map((_,i)=>i===0?(parseInt(unit.totalQtyDelivered,10)||0):0);
+ while(qtys.length<descriptions.length)qtys.push(0);
+ const rows=descriptions.map((description,index)=>`<tr><td class="qty-cell">${qtys[index]||0}</td><td class="description-text">${escapeHTML(description)}</td></tr>`).join('');
+ const totalQty=qtys.slice(0,descriptions.length).reduce((sum,q)=>sum+q,0);
+ if(!descriptions.length)return '<span style="color:var(--text-muted)">—</span>';
+ return `<div class="unitdb-description-box"><div class="unitdb-sku-title">[${escapeHTML(unit.sku||'—')}]</div><table class="unitdb-description-table"><thead><tr><th style="width:55px;text-align:center;">QTY</th><th>Item Description</th></tr></thead><tbody>${rows}</tbody></table><div class="unitdb-description-summary"><strong>Items:</strong> ${descriptions.length} ${escapeHTML(unit.um||'EA')}<br><strong>Total Qty:</strong> ${totalQty}</div></div>`;
+}
+function buildSOHTML(unit){
+ const list=Array.from(new Set((unit.itemCodeSOList&&unit.itemCodeSOList.length?unit.itemCodeSOList:[unit.itemCodeSO||'']).filter(Boolean)));
+ if(!list.length)return'<span style="color:var(--text-muted)">—</span>';
+ return`<div class="unitdb-so-list">${list.map((s,i)=>`<div class="unitdb-list-item"><span class="unitdb-list-no">${i+1}.</span><span>${escapeHTML(s)}</span></div>`).join('')}</div>`;
+}
+
+function renderUnitDatabase(){
+ const tbody=document.getElementById('unitDbTableBody');tbody.innerHTML='';
+ const query=(unitDbSearchInput.value||'').trim().toLowerCase();
+ 
+ const groups=groupUnitsByInvoicePhoto();
+ let filteredGroups=groups.map(group=>{
+  if(!query) return group;
+  return group.filter(u=>{
+   const textToSearch=`${u.serialNumber} ${u.invoiceNo} ${u.supplier} ${u.sku} ${u.name} ${u.customer} ${u.customerAddress} ${u.shipTo} ${u.itemCodeSO} ${u.poNo} ${u.remarks}`.toLowerCase();
+   return textToSearch.includes(query);
+  });
+ }).filter(g=>g.length>0);
+
+ if(!filteredGroups.length){tbody.innerHTML='<tr><td colspan="14" class="empty-row">No matching unit records found.</td></tr>';return}
+ 
+ filteredGroups.forEach(group=>{
+  const first=group[0],tr=document.createElement('tr');tr.className='unit-group-single-row';
+  const photo=first.imageKey?`<div class="unitdb-photo-wrap"><img class="unit-group-photo" data-invoice-image-key="${escapeHTML(first.imageKey)}" onclick="viewInvoiceImageByKey(this.dataset.invoiceImageKey)" alt="Invoice Photo"><div class="unitdb-photo-label">${escapeHTML(first.dateAdded||'Scanned Invoice')}</div></div>`:`<div class="unitdb-photo-wrap"><div class="unit-group-photo unitdb-no-photo">No Photo</div><div class="unitdb-photo-label">No scanned image</div></div>`;
+  const serialHTML=group.map((u,index)=>`<div class="unitdb-serial-item"><span class="unitdb-serial-number">#${index+1}</span><span class="unitdb-serial-value">${escapeHTML(u.serialNumber||'—')}</span></div>`).join('');
+  const groupKey=getUnitGroupKey(first);
+  const actionHTML=`<div class="unitdb-action-inline"><button type="button" class="btn btn-warning" onclick="editUnitGroupRecord('${encodeURIComponent(groupKey)}')">Edit</button><button type="button" class="btn btn-danger" onclick="deleteUnitGroupRecord('${encodeURIComponent(groupKey)}')">Delete</button></div>`;
+  const statusHTML=group.map(u=>`<div class="unitdb-status-item"><span class="badge ${u.status==='In Stock'?'badge-success':u.status==='Partially'?'badge-warning':'badge-muted'}">${escapeHTML(u.status||'')}</span></div>`).join('');
+  const unitPrice=formatMoney(first.unitCost),amount=formatMoney(first.netAmount),totalCost=formatMoney(first.totalCost);
+  tr.innerHTML=`<td>${photo}</td><td><div class="unitdb-primary-value">${escapeHTML(first.invoiceNo||'UNKNOWN')}</div></td><td><div class="unitdb-primary-value" style="color:#0f172a;font-weight:500">${escapeHTML(first.supplier||'UNKNOWN')}</div></td><td>${buildDescriptionHTML(first)}</td><td>${serialHTML}</td><td><div class="unitdb-primary-value" style="color:#0f172a">${escapeHTML(first.customer||'UNKNOWN')}</div>${first.customerAddress?`<div class="unitdb-small-meta">${escapeHTML(first.customerAddress)}</div>`:''}</td><td>${escapeHTML(first.shipTo||'—')}</td><td>${buildSOHTML(first)}</td><td><strong>${unitPrice}</strong></td><td><strong style="color:#15803d">${amount}</strong></td><td><strong style="color:#15803d">${totalCost}</strong></td><td>${escapeHTML(first.poNo||'—')}</td><td>${statusHTML}</td><td>${actionHTML}</td>`;
+  tbody.appendChild(tr);
+ });
+ hydrateInvoiceImageElements();
+}
+
+unitDbSearchInput.addEventListener('input',renderUnitDatabase);
+
+/* DESKTOP SEARCH AND SELECTION LOGIC */
+const desktopBaseSearchInput = document.getElementById('desktopBaseSearchInput');
+const desktopBaseSerialInput = document.getElementById('desktopBaseSerial');
+const desktopDropdownList = document.getElementById('desktopDropdownList');
+
+function renderDesktopDropdown(filterText = '') {
+ const activeUnits = unitDatabase.filter(u => u.serialNumber && u.serialNumber !== '---');
+ const query = filterText.trim().toLowerCase();
+ const filtered = activeUnits.filter(u => {
+  const desc = (u.name || '').toLowerCase();
+  const sn = (u.serialNumber || '').toLowerCase();
+  const sku = (u.sku || '').toLowerCase();
+  const cust = (u.customer || '').toLowerCase();
+  return sn.includes(query) || desc.includes(query) || sku.includes(query) || cust.includes(query);
+ });
+
+ desktopDropdownList.innerHTML = '';
+ if (!filtered.length) {
+  desktopDropdownList.innerHTML = '<div style="padding:10px;color:var(--text-muted);font-size:.85rem;">No active units found.</div>';
+  desktopDropdownList.style.display = 'block';
+  return;
+ }
+
+ filtered.forEach(u => {
+  const item = document.createElement('div');
+  item.style.cssText = 'padding:10px 12px;cursor:pointer;border-bottom:1px solid var(--border);font-size:.85rem;';
+  item.innerHTML = `<strong>Serial: ${escapeHTML(u.serialNumber)}</strong> [${escapeHTML(u.sku)}]<br><span style="color:var(--text-muted);">${escapeHTML(u.name)}</span>`;
+  item.addEventListener('mouseenter', () => item.style.background = '#f8fafc');
+  item.addEventListener('mouseleave', () => item.style.background = '#fff');
+  item.addEventListener('click', () => {
+   desktopBaseSearchInput.value = `[${u.sku}] Serial: ${u.serialNumber} - ${u.name}`;
+   desktopBaseSerialInput.value = u.serialNumber;
+   desktopDropdownList.style.display = 'none';
+  });
+  desktopDropdownList.appendChild(item);
+ });
+ desktopDropdownList.style.display = 'block';
+}
+
+desktopBaseSearchInput.addEventListener('input', function() {
+ desktopBaseSerialInput.value = '';
+ renderDesktopDropdown(this.value);
+});
+
+desktopBaseSearchInput.addEventListener('focus', function() {
+ renderDesktopDropdown(this.value);
+});
+
+document.addEventListener('click', function(e) {
+ if (!desktopBaseSearchInput.contains(e.target) && !desktopDropdownList.contains(e.target)) {
+  desktopDropdownList.style.display = 'none';
+ }
+});
+
+function renderDesktopPartsLog(){
+ const tbody=document.getElementById('desktopPartsTableBody');tbody.innerHTML='';
+ if(!desktopPartsLog.length){tbody.innerHTML='<tr><td colspan="8" class="empty-row">No desktop component modifications logged yet.</td></tr>';return}
+ desktopPartsLog.forEach((item)=>{
+  const tr=document.createElement('tr');
+  const matchingUnit = unitDatabase.find(u => u.serialNumber === item.baseSerial);
+  const descText = matchingUnit && matchingUnit.name ? ` - ${matchingUnit.name}` : '';
+  tr.innerHTML=`
+   <td>${escapeHTML(item.timestamp)}</td>
+   <td><strong>${escapeHTML(item.baseSerial)}</strong>${escapeHTML(descText)}</td>
+   <td><span class="badge ${item.actionType==='Add Part'?'badge-success':item.actionType==='Change / Replace Part'?'badge-warning':'badge-danger'}">${escapeHTML(item.actionType)}</span></td>
+   <td>${escapeHTML(item.partName)}</td>
+   <td><strong style="color:#15803d">${escapeHTML(item.partSerialAdded||'—')}</strong></td>
+   <td><strong style="color:#b91c1c">${escapeHTML(item.partSerialRemoved||'—')}</strong></td>
+   <td>${escapeHTML(item.remarks||'—')}</td>
+   <td>
+     <button class="btn btn-sm btn-warning" onclick="editDesktopPartLog('${item.id}')">Edit</button>
+     <button class="btn btn-sm btn-danger" onclick="deleteDesktopPartLog('${item.id}')">Delete</button>
+   </td>
+  `;
+  tbody.appendChild(tr);
+ });
+}
+
+desktopPartsForm.addEventListener('submit',e=>{
+ e.preventDefault();
+ const baseSerial=desktopBaseSerialInput.value || desktopBaseSearchInput.value.trim();
+ const actionType=document.getElementById('desktopActionType').value;
+ const partName=document.getElementById('partName').value.trim();
+ const partSerialAdded=document.getElementById('partSerialAdded').value.trim();
+ const partSerialRemoved=document.getElementById('partSerialRemoved').value.trim();
+ const remarks=document.getElementById('desktopPartRemarks').value.trim();
+ const editId=document.getElementById('editDesktopLogId').value;
+
+ if(!baseSerial){alert('Please select or enter a valid base desktop serial number.');return}
+
+ if((actionType==='Change / Replace Part' || actionType==='Add Part' || actionType==='Remove Part') && partSerialAdded && partSerialRemoved && partSerialAdded!=='---' && partSerialRemoved!=='---' && partSerialAdded.toLowerCase()===partSerialRemoved.toLowerCase()){
+  alert('The Serial Number of part Added and Part Removed cannot be the same!');
+  return;
+ }
+
+ if(!confirm('Do you want to save the details of this "Record Component Modification"? Click OK to proceed or Cancel to abort.')) return;
+
+ if(editId){
+  const logItem = desktopPartsLog.find(i => i.id === editId);
+  if(logItem){
+   logItem.baseSerial = baseSerial;
+   logItem.actionType = actionType;
+   logItem.partName = partName;
+   logItem.partSerialAdded = partSerialAdded || '---';
+   logItem.partSerialRemoved = partSerialRemoved || '---';
+   logItem.remarks = remarks;
+  }
+  logs.unshift({
+   date:new Date().toLocaleString(),
+   invoiceNo:'DESKTOP-MOD',
+   type:'COMPONENT MODIFICATION EDITED',
+   sku:baseSerial,
+   details:`Edited ${actionType}: ${partName}`
+   });
+  alert('Desktop component modification updated successfully!');
+ } else {
+  desktopPartsLog.unshift({
+   id:'DP_'+Math.random().toString(36).substr(2,9),
+   timestamp:new Date().toLocaleString(),
+   baseSerial,
+   actionType,
+   partName,
+   partSerialAdded:partSerialAdded||'---',
+   partSerialRemoved:partSerialRemoved||'---',
+   remarks
+  });
+
+  logs.unshift({
+   date:new Date().toLocaleString(),
+   invoiceNo:'DESKTOP-MOD',
+   type:'COMPONENT MODIFICATION',
+   sku:baseSerial,
+   details:`${actionType}: ${partName} (Added: ${partSerialAdded||'None'}, Removed: ${partSerialRemoved||'None'})`
+  });
+  alert('Desktop component record saved successfully!');
+ }
+
+ saveData();
+ cancelDesktopEdit();
+});
+
+window.editDesktopPartLog=function(id){
+ const item=desktopPartsLog.find(i=>i.id===id);
+ if(!item)return;
+ document.getElementById('editDesktopLogId').value=item.id;
+ desktopBaseSerialInput.value=item.baseSerial;
+ desktopBaseSearchInput.value=item.baseSerial;
+ document.getElementById('desktopActionType').value=item.actionType;
+ document.getElementById('partName').value=item.partName;
+ document.getElementById('partSerialAdded').value=item.partSerialAdded==='---'?'':item.partSerialAdded;
+ document.getElementById('partSerialRemoved').value=item.partSerialRemoved==='---'?'':item.partSerialRemoved;
+ document.getElementById('desktopPartRemarks').value=item.remarks;
+ 
+ const removedGroup=document.getElementById('partRemovedGroup');
+ if(item.actionType==='Add Part'){removedGroup.style.display='none';}else{removedGroup.style.display='block';}
+
+ document.getElementById('desktopSubmitBtn').textContent='Update Component Modification';
+ document.getElementById('desktopCancelEditBtn').style.display='inline-block';
+ window.scrollTo({top:0,behavior:'smooth'});
+};
+
+window.cancelDesktopEdit=function(){
+ desktopPartsForm.reset();
+ document.getElementById('editDesktopLogId').value='';
+ desktopBaseSerialInput.value='';
+ document.getElementById('desktopSubmitBtn').textContent='Record Component Modification';
+ document.getElementById('desktopCancelEditBtn').style.display='none';
+ document.getElementById('partRemovedGroup').style.display='block';
+};
+
+window.deleteDesktopPartLog=function(id){
+ const idx=desktopPartsLog.findIndex(i=>i.id===id);
+ if(idx===-1)return;
+ if(!confirm('Are you sure you want to delete this component log? It will be sent to Retrieve/Trash.'))return;
+ const removed=desktopPartsLog.splice(idx,1)[0];
+ trashBin.unshift({type:'Desktop Part Log',data:removed,timestamp:new Date().toLocaleString()});
+ saveData();
+ alert('Log entry sent to Retrieve/Trash.');
+};
+
+document.getElementById('desktopActionType').addEventListener('change',function(){
+ const removedGroup=document.getElementById('partRemovedGroup');
+ if(this.value==='Add Part'){
+  removedGroup.style.display='none';
+ }else{
+  removedGroup.style.display='block';
+ }
+});
+
+function renderDashboard(){document.getElementById('statProducts').textContent=inventory.length;document.getElementById('statStock').textContent=unitDatabase.filter(u=>u.status==='In Stock').length;document.getElementById('statDispatched').textContent=unitDatabase.filter(u=>u.status==='Dispatched').length;document.getElementById('statTransactions').textContent=logs.length}
+function renderInventory(){
+ const tbody=document.getElementById('inventoryTableBody');tbody.innerHTML='';
+ if(!inventory.length){tbody.innerHTML='<tr><td colspan="4" class="empty-row">No products created yet.</td></tr>';return}
+ inventory.forEach(prod=>{const stockCount=unitDatabase.filter(u=>u.sku===prod.sku&&u.status==='In Stock').length,tr=document.createElement('tr');tr.innerHTML=`<td><strong>${escapeHTML(prod.sku)}</strong></td><td>${escapeHTML(prod.name)}</td><td><span class="badge badge-success">${stockCount} In Stock</span></td><td><button class="btn btn-sm secondary-btn" onclick="editProduct('${escapeHTML(prod.sku)}')">Edit</button> <button class="btn btn-sm btn-danger" onclick="deleteProduct('${escapeHTML(prod.sku)}')">Delete</button></td>`;tbody.appendChild(tr)})
+}
+function renderTrash(){
+ const tbody=document.getElementById('trashTableBody');tbody.innerHTML='';if(!trashBin.length){tbody.innerHTML='<tr><td colspan="4" class="empty-row">Trash is empty.</td></tr>';return}
+ trashBin.forEach((item,idx)=>{const tr=document.createElement('tr');tr.innerHTML=`<td><span class="badge badge-warning">${escapeHTML(item.type)}</span></td><td>${escapeHTML(item.data.sku||item.data.serialNumber||item.data.invoiceNo||item.data.partName||'Record')}</td><td>${escapeHTML(item.timestamp)}</td><td><button class="btn btn-sm btn-success" onclick="restoreFromTrash(${idx})">Restore</button></td>`;tbody.appendChild(tr)})
+}
+
+window.clearAllTrash = function() {
+ if(!trashBin.length){
+  alert('Trash is already empty.');
+  return;
+ }
+ if(!confirm('Are you sure you want to permanently clear all items in the trash? This action cannot be undone.')) return;
+ trashBin = [];
+ saveData();
+ alert('All trash items have been cleared.');
+};
+
+function renderLogs(){
+ const tbody=document.getElementById('logsTableBody');tbody.innerHTML='';if(!logs.length){tbody.innerHTML='<tr><td colspan="5" class="empty-row">No transactions recorded.</td></tr>';return}
+ logs.forEach(log=>{const tr=document.createElement('tr');tr.innerHTML=`<td>${escapeHTML(log.date)}</td><td>${escapeHTML(log.invoiceNo)}</td><td><span class="badge badge-info">${escapeHTML(log.type)}</span></td><td>${escapeHTML(log.sku)}</td><td>${escapeHTML(log.details)}</td>`;tbody.appendChild(tr)})
+}
+function renderDropdowns(){
+ const rec=document.getElementById('recProduct'),ord=document.getElementById('orderProduct');rec.innerHTML='';ord.innerHTML='';
+ inventory.forEach(prod=>{const a=document.createElement('option');a.value=prod.sku;a.textContent=`${prod.sku} - ${prod.name}`;rec.appendChild(a);const b=document.createElement('option');b.value=prod.sku;b.textContent=`${prod.sku} - ${prod.name}`;ord.appendChild(b)})
+}
+function renderAll(){
+ renderDashboard();
+ renderInventory();
+ renderUnitDatabase();
+ renderDesktopPartsLog();
+ renderTrash();
+ renderLogs();
+ renderDropdowns();
+ hydrateInvoiceImageElements();
+}
+
+window.viewInvoiceImage=function(image){if(!image){alert('No image available');return}document.getElementById('modalImage').src=image;document.getElementById('imageModal').classList.add('active')}
+function closeImageModal(e){if(e&&e.target&&e.target.id!=='imageModal')return;document.getElementById('imageModal').classList.remove('active')}
+window.resetSystemData=function(){if(!confirm('WARNING: This will clear all data across browser storage. Continue?'))return;localStorage.clear();inventory=[];unitDatabase=[];desktopPartsLog=[];trashBin=[];logs=[];renderAll();alert('System reset complete.')}
+orderForm.addEventListener('submit',event=>{
+ event.preventDefault();const sku=document.getElementById('orderProduct').value,qty=parseInt(orderQtyInput.value)||0,inputs=document.querySelectorAll('.outgoing-sn'),serials=[];inputs.forEach(input=>{const v=input.value.trim();if(v)serials.push(v)});
+ if(serials.length!==qty){alert('Serial count does not match dispatch quantity.');return}
+ for(const sn of serials){const unit=unitDatabase.find(u=>String(u.serialNumber).toLowerCase()===sn.toLowerCase()&&u.sku===sku);if(!unit){alert(`Serial "${sn}" not found in stock.`);return}if(unit.status!=='In Stock'){alert(`Serial "${sn}" is already dispatched.`);return}unit.status='Dispatched'}
+ logs.unshift({date:new Date().toLocaleString(),invoiceNo:'OUTBOUND',type:'OUTGOING DISPATCH',sku,details:`Dispatched ${qty} unit(s)`});saveData();alert('Order fulfilled successfully!');orderForm.reset();generateOutgoingSerialFields(0)
+});
+
+window.editProduct=function(sku){const p=inventory.find(i=>i.sku===sku);if(!p)return;const name=prompt('Edit product name:',p.name);if(name){p.name=name.trim();saveData()}}
+window.deleteProduct=function(sku){if(!confirm(`Delete product ${sku}?`))return;const p=inventory.find(i=>i.sku===sku);if(p)trashBin.unshift({type:'Product Master',data:p,timestamp:new Date().toLocaleString()});inventory=inventory.filter(i=>i.sku!==sku);saveData()}
+
+window.deleteUnitGroupRecord=function(encodedGroupKey){
+ const groupKey=decodeURIComponent(encodedGroupKey);
+ const groupUnits=unitDatabase.filter(u=>getUnitGroupKey(u)===groupKey);
+ if(!groupUnits.length){alert('Record group not found.');return;}
+ const first=groupUnits[0];
+ if(!confirm(`Delete all ${groupUnits.length} unit record(s) for Invoice: ${first.invoiceNo}, SKU: ${first.sku}?\n\nThey will be moved to Trash.`))return;
+ groupUnits.forEach(u=>{
+  const index=unitDatabase.findIndex(item=>item.id===u.id);
+  if(index!==-1){
+   const removed=unitDatabase.splice(index,1)[0];
+   trashBin.unshift({type:'Unit Record',data:removed,timestamp:new Date().toLocaleString()});
+  }
+ });
+ logs.unshift({date:new Date().toLocaleString(),invoiceNo:first.invoiceNo,type:'GROUP DELETED',sku:first.sku,details:`Deleted ${groupUnits.length} unit(s)`});
+ saveData();
+ alert('Unit records deleted successfully!');
+}
+
+window.restoreFromTrash=function(index){
+ const item=trashBin[index];if(!item)return;
+ if(item.type==='Product Master'){if(!inventory.some(p=>p.sku===item.data.sku))inventory.push(item.data)}
+ else if(item.type==='Unit Record'){if(!unitDatabase.some(u=>u.id===item.data.id))unitDatabase.push(item.data)}
+ else if(item.type==='Desktop Part Log'){if(!desktopPartsLog.some(d=>d.id===item.data.id))desktopPartsLog.push(item.data)}
+ trashBin.splice(index,1);saveData();alert('Item restored successfully!');
+}
+
+/* FULL EDIT MODAL FOR GROUP */
+function populateEditSkuOptions(selected){
+ const select=document.getElementById('editSku');select.innerHTML='';inventory.forEach(p=>{const o=document.createElement('option');o.value=p.sku;o.textContent=`${p.sku} - ${p.name}`;if(p.sku===selected)o.selected=true;select.appendChild(o)})
+}
+function fillEditSOFields(list){
+ const box=document.getElementById('editItemCodeSOFields');box.innerHTML='';const values=list&&list.length?list:[''];
+ values.forEach(v=>addEditSOField(v));
+}
+window.addEditSOField=function(value=''){
+ const box=document.getElementById('editItemCodeSOFields'),row=document.createElement('div');row.className='item-code-row';
+ const input=document.createElement('input');input.className='edit-so-value';input.value=value||'';input.placeholder='Item Code / SO Number';
+ const btn=document.createElement('button');btn.type='button';btn.className='mini-remove-btn';btn.title='Remove Item Code / SO Number';btn.setAttribute('aria-label','Remove Item Code / SO Number');btn.textContent='−';
+ btn.onclick=()=>{row.remove();if(!box.querySelector('.item-code-row'))window.addEditSOField('')};
+ row.append(input,btn);box.appendChild(row);
+}
+
+function fillEditDescriptions(list,qtyList){
+ const qtyBox=document.getElementById('editDescriptionQtyFields');qtyBox.innerHTML='';
+ const descBox=document.getElementById('editDescriptionFields');descBox.innerHTML='';
+ const values=list&&list.length?list:[''];const qtys=Array.isArray(qtyList)?qtyList:[];
+ values.forEach((v,i)=>{
+  addEditQtyField(qtys[i]||0);
+  addEditDescriptionField(v);
+ });
+ if(!values.length){addEditQtyField(0);addEditDescriptionField('');}
+ calculateEditTotalFromQtyFields();
+}
+
+window.addEditQtyField=function(value=0){
+ const qtyBox=document.getElementById('editDescriptionQtyFields');
+ const input=document.createElement('input');input.type='number';input.className='edit-description-qty';input.min='0';input.value=value;input.placeholder='QTY';
+ input.addEventListener('input',calculateEditTotalFromQtyFields);
+ qtyBox.appendChild(input);
+ calculateEditTotalFromQtyFields();
+}
+
+window.removeEditQtyField=function(){
+ const qtys=document.getElementById('editDescriptionQtyFields').querySelectorAll('.edit-description-qty');
+ if(qtys.length>1){qtys[qtys.length-1].remove();calculateEditTotalFromQtyFields();}
+}
+
+window.addEditDescriptionField=function(value=''){
+ const descBox=document.getElementById('editDescriptionFields');
+ const row=document.createElement('div');row.className='description-row';
+ const ta=document.createElement('textarea');ta.className='edit-description-value';ta.rows=3;ta.value=value;ta.placeholder='Item description';
+ row.appendChild(ta);descBox.appendChild(row);
+}
+
+window.removeEditDescriptionField=function(){
+ const rows=document.getElementById('editDescriptionFields').querySelectorAll('.description-row');
+ if(rows.length>1){rows[rows.length-1].remove();}
+}
+
+window.addEditSerialRow=function(sn='', status='In Stock'){
+ const container=document.getElementById('editSerialsContainer');
+ const row=document.createElement('div');row.className='serial-row-item';
+ row.innerHTML=`
+  <span class="serial-index-label">[#]</span>
+  <input type="text" class="edit-sn-input" value="${escapeHTML(sn)}" placeholder="Serial number or type ---">
+  <select class="edit-sn-status">
+   <option ${status==='In Stock'?'selected':''}>In Stock</option>
+   <option ${status==='Dispatched'?'selected':''}>Dispatched</option>
+   <option ${status==='Partially'?'selected':''}>Partially</option>
+  </select>
+  <button type="button" class="mini-remove-btn" onclick="removeEditSerialRow(this)" title="Remove Serial" aria-label="Remove Serial">−</button>
+ `;
+ container.appendChild(row);
+ updateEditSerialIndices();
+}
+
+window.removeEditSerialRow=function(btn){
+ btn.closest('.serial-row-item').remove();
+ updateEditSerialIndices();
+}
+
+function updateEditSerialIndices(){
+ const container=document.getElementById('editSerialsContainer');
+ const rows=container.querySelectorAll('.serial-row-item');
+ rows.forEach((row, idx)=>{
+  const label=row.querySelector('.serial-index-label');
+  if(label) label.textContent=`[${idx+1}]`;
+ });
+ document.getElementById('editTotalQty').value=rows.length;
+ calculateEditPricing();
+}
+
+function calculateEditTotalFromQtyFields(){
+ const qtyInputs=Array.from(document.querySelectorAll('.edit-description-qty'));
+ const total=qtyInputs.reduce((sum,input)=>sum+Math.max(0,parseInt(input.value,10)||0),0);
+ document.getElementById('editTotalQty').value=total;
+ syncEditSerialsToCount(total);
+ calculateEditPricing();
+}
+
+function onEditTotalQtyManualInput(){
+ const total=Math.max(0,parseInt(document.getElementById('editTotalQty').value,10)||0);
+ syncEditSerialsToCount(total);
+ calculateEditPricing();
+}
+
+function syncEditSerialsToCount(count){
+ const container=document.getElementById('editSerialsContainer');
+ const existingRows=Array.from(container.querySelectorAll('.serial-row-item'));
+ const currentCount=existingRows.length;
+ if(count>currentCount){
+  for(let i=currentCount;i<count;i++){
+   addEditSerialRow('','In Stock');
+  }
+ }else if(count<currentCount){
+  for(let i=currentCount;i>count;i--){
+   existingRows[i-1].remove();
+  }
+  updateEditSerialIndices();
+ }
+}
+
+function calculateEditPricing(){
+ const qty=Math.max(0,parseInt(document.getElementById('editTotalQty').value,10)||0);
+ const unitPrice=Math.max(0,parseMoney(document.getElementById('editUnitCost').value));
+ const amount=qty*unitPrice;
+ document.getElementById('editNetAmount').value=amount.toFixed(2);
+ document.getElementById('editTotalCost').value=amount.toFixed(2);
+}
+
+window.editUnitGroupRecord=function(encodedGroupKey){
+ const groupKey=decodeURIComponent(encodedGroupKey);
+ const groupUnits=unitDatabase.filter(u=>getUnitGroupKey(u)===groupKey);
+ if(!groupUnits.length)return;
+ const first=groupUnits[0];
+ document.getElementById('editGroupKey').value=groupKey;
+ document.getElementById('editInvoiceNo').value=first.invoiceNo||'';
+ document.getElementById('editSupplier').value=first.supplier||'';
+ populateEditSkuOptions(first.sku);
+ document.getElementById('editCustomer').value=first.customer||'';
+ document.getElementById('editCustomerAddress').value=first.customerAddress||'';
+ document.getElementById('editShipTo').value=first.shipTo||'';
+ document.getElementById('editPoNo').value=first.poNo||'';
+ document.getElementById('editInvoiceDate').value=first.invoiceDate||'';
+ document.getElementById('editOtherDate').value=first.otherDate||'';
+ document.getElementById('editTerms').value=first.terms||'';
+ document.getElementById('editUm').value=first.um||'EA';
+ document.getElementById('editUnitCost').value=Number(first.unitCost||0).toFixed(2);
+ document.getElementById('editRemarks').value=first.remarks||'';
+
+ fillEditSOFields(first.itemCodeSOList&&first.itemCodeSOList.length?first.itemCodeSOList:[first.itemCodeSO||'']);
+ fillEditDescriptions(first.descriptionValues&&first.descriptionValues.length?first.descriptionValues:[first.name||''],first.descriptionQtyValues);
+ 
+ const container=document.getElementById('editSerialsContainer');
+ container.innerHTML='';
+ groupUnits.forEach(u=>{
+  addEditSerialRow(u.serialNumber||'', u.status||'In Stock');
+ });
+
+ calculateEditPricing();
+ document.getElementById('editUnitModal').classList.add('active');
+}
+
+function closeEditUnitModal(e){if(e&&e.target&&e.target.id!=='editUnitModal')return;document.getElementById('editUnitModal').classList.remove('active')}
+document.getElementById('editUnitCost').addEventListener('input',calculateEditPricing);
+
+document.getElementById('editUnitForm').addEventListener('submit',function(e){
+ e.preventDefault();
+ const groupKey=document.getElementById('editGroupKey').value;
+ const groupUnits=unitDatabase.filter(u=>getUnitGroupKey(u)===groupKey);
+ if(!groupUnits.length)return;
+
+ const first=groupUnits[0];
+ const newInvoiceNo=document.getElementById('editInvoiceNo').value.trim()||first.invoiceNo;
+ const newSupplier=document.getElementById('editSupplier').value.trim();
+ const selectedSku=document.getElementById('editSku').value;
+ const product=inventory.find(p=>p.sku===selectedSku);
+ const customer=document.getElementById('editCustomer').value.trim();
+ const customerAddress=document.getElementById('editCustomerAddress').value.trim();
+ const shipTo=document.getElementById('editShipTo').value.trim();
+ const poNo=document.getElementById('editPoNo').value.trim();
+ const invoiceDate=document.getElementById('editInvoiceDate').value;
+ const otherDate=document.getElementById('editOtherDate').value;
+ const terms=document.getElementById('editTerms').value.trim();
+ const um=document.getElementById('editUm').value.trim()||'EA';
+ const unitCost=Math.max(0,parseMoney(document.getElementById('editUnitCost').value));
+ const remarks=document.getElementById('editRemarks').value.trim();
+
+ const descriptionRows=Array.from(document.querySelectorAll('#editDescriptionFields .description-row'));
+ const descriptions=descriptionRows.map(row=>row.querySelector('.edit-description-value')?.value.trim()||'').filter(Boolean);
+ const descriptionQtyValues=Array.from(document.querySelectorAll('#editDescriptionQtyFields .edit-description-qty')).map(i=>Math.max(0,parseInt(i.value,10)||0));
+ 
+ const serialRows=Array.from(document.querySelectorAll('#editSerialsContainer .serial-row-item'));
+ const totalQty=serialRows.length;
+ const netAmount=totalQty*unitCost;
+ const totalCost=totalQty*unitCost;
+
+ const sos=Array.from(document.querySelectorAll('.edit-so-value')).map(x=>x.value.trim()).filter(Boolean);
+
+ if(totalQty<=0){
+  alert('Please add at least one serial number row.');
+  return;
+}
+
+ const activeSerials=[];
+ serialRows.forEach(row=>{
+  const sn=row.querySelector('.edit-sn-input').value.trim()||'---';
+  if(sn!=='---') activeSerials.push(sn.toLowerCase());
+ });
+ if(new Set(activeSerials).size!==activeSerials.length){
+  alert('Active serial numbers must be unique.');
+  return;
+ }
+
+ unitDatabase=unitDatabase.filter(u=>getUnitGroupKey(u)!==groupKey);
+
+ const timestamp=new Date().toLocaleString();
+ serialRows.forEach((row, index)=>{
+  const sn=row.querySelector('.edit-sn-input').value.trim()||'---';
+  const unitStatus=row.querySelector('.edit-sn-status').value;
+  const existingUnit=groupUnits[index];
+
+  unitDatabase.push({
+   id:existingUnit?existingUnit.id:('U_'+Math.random().toString(36).substr(2,12)),
+   invoiceNo:newInvoiceNo,
+   supplier:newSupplier,
+   sku:selectedSku,
+   name:descriptions.join('\n\n')||(product?product.name:first.name),
+   descriptionValues:descriptions,
+   descriptionQtyValues:descriptionQtyValues,
+   serialNumber:sn,
+   customer,
+   customerAddress,
+   shipTo,
+   itemCodeSO:sos[0]||'',
+   itemCodeSOList:sos.length?sos:[''],
+   poNo,
+   invoiceDate,
+   otherDate,
+   terms,
+   um,
+   totalQtyDelivered:totalQty,
+   unitCost,
+   netAmount,
+   totalCost,
+   remarks,
+   imageKey:first.imageKey||'',
+   status:unitStatus,
+   dateAdded:existingUnit?existingUnit.dateAdded:(first.dateAdded||timestamp)
+  });
+ });
+
+ logs.unshift({date:timestamp,invoiceNo:newInvoiceNo,type:'GROUP EDITED',sku:selectedSku,details:`Updated group details and units`});
+ saveData();
+ closeEditUnitModal();
+ alert('Unit group record updated successfully!');
+});
+
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeImageModal();closeEditUnitModal()}});
+
+renderAll();
+</script>
+</body>
+</html>
